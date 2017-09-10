@@ -36,81 +36,10 @@ struct chromosome {
 	//WEIGHT[i] / SUM(WEIGHT[i])i=0...N
 	int gene[GENE_LENGTH], fitness, preferWeight;
 
-	//DECOMPOSE POSITION
-	int getRow(int idx) {
-		return idx / 9;
-	}
-
-	int getCol(int idx) {
-		return idx % 9;
-	}
-
-	int getTable(int idx) {
-		int r = getRow(idx);
-		int c = getCol(idx);
-		return 3 * (r / 3) + c / 3;
-	}
-
-	//CHECKING FUNCTION
-	int checkRow(int idx) {
-		int r = getRow(idx);
-		int c = getCol(idx);
-		int ret = 0;
-		for (int i = 0; i < SUDOKU_COL; i++) {
-			if (c == i) continue;
-			ret += DUPLICATED_ROW_COST*(gene[idx] == gene[SUDOKU_COL*r + i]);
-		}
-		return ret;
-	}
-
-	int checkCol(int idx) {
-		int r = getRow(idx);
-		int c = getCol(idx);
-		int ret = 0;
-		for (int i = 0; i < SUDOKU_ROW; i++) {
-			if (r == i) continue;
-			ret += DUPLICATED_COL_COST*(gene[idx] == gene[SUDOKU_COL*i + c]);
-		}
-		return ret;
-	}
-
-	int checkTable(int idx) {
-		int t = getTable(idx);
-		int iniIdx = 27 * (t / 3) + 3 * (t % 3); //UPPER-LEFT CORNER OF EVERY TABLE FOR 9*9
-		int r = getRow(iniIdx);
-		int c = getCol(iniIdx);
-		int ret = 0, i, j;
-		for (i = r; i < r + 3; i++) {
-			for (int j = c; j < c + 3; j++) {
-				int cur = SUDOKU_COL*i + j;
-				if (cur == idx) continue;
-				ret += DUPLICATED_TABLE_COST*(gene[idx] == gene[cur]);
-			}
-		}
-		return ret;
-	}
-
-	int checkUnset(int idx) {
-		if (gene[idx] == 0) return UNSET_COST;
-		return 0;
-	}
-
-	int checkIllegal(int idx) {
-		if (prototype.gene[idx] == 0) return 0;
-		if (prototype.gene[idx] != gene[idx]) return ILLEGAL_COST;
-		else return 0;
-	}
 
 	//MAY CHANGE THIS FUNC TO RETURN INT LATERS.
 	void fitnessCalc() {
-		fitness = 0;
-		for (int i = 0; i < GENE_LENGTH; i++) {
-			fitness += checkRow(i);
-			fitness += checkCol(i);
-			fitness += checkTable(i);
-			fitness += checkUnset(i);
-			fitness += checkIllegal(i);//check for invalid answer from the starting point (change constant value given by the task)
-		}
+		
 	}
 
 	void clear() {
@@ -126,19 +55,6 @@ struct chromosome {
 			int rndval = distribution(gen);
 
 			gene[i] = rndval;
-		}
-	}
-
-	void SudokuRandomize() {
-		std::random_device gen;
-		std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
-		for (int i = 0; i < GENE_LENGTH; i++) {
-			if (prototype.gene[i]) gene[i] = prototype.gene[i];
-			else {
-				int rndval = distribution(gen);
-
-				gene[i] = rndval;
-			}
 		}
 	}
 
