@@ -32,10 +32,37 @@ typedef unsigned long long ull;
 #define UNSET_COST 1
 #define ILLEGAL_COST 10000
 
+// B -> Build Genes
+// R -> Research Genes
+// E -> Economy Genes
+// C -> Combat Genes
+
+class Gene{
+
+
+};
+
+class BuildGene : public Gene{
+
+};
+
+class ResearchGene : public Gene{
+
+};
+
+class EconomyGene : public Gene{
+
+};
+
+class CombatGene : public Gene{
+
+};
+
+
 struct chromosome {
 	//WEIGHT[i] / SUM(WEIGHT[i])i=0...N
-	int gene[GENE_LENGTH], fitness, preferWeight;
-
+	string gene[GENE_LENGTH]; //GENE as Behavior
+    int  fitness, preferWeight;
 
 	//MAY CHANGE THIS FUNC TO RETURN INT LATERS.
 	void fitnessCalc() {
@@ -183,8 +210,47 @@ void clearNotFitIndividuals() {
 
 int chooseIndividual() {
 	std::random_device gen;
-	std::uniform_int_distribution<int> genePosDist(0, curPopSize);
+	std::uniform_int_distribution<int> genePosDist(0, curPopSize-1);
 	return genePosDist(gen);
+}
+
+// B -> Build Genes
+// R -> Research Genes
+// E -> Economy Genes
+// C -> Combat Genes
+
+void stateCrossOver(int a,int b){ // 30%
+
+}
+
+void replaceMutate(int idx){ // 30%
+    std::random_device gen;
+    std::uniform_int_distribution<int> distribution(0, 3);
+
+    for (int i=0;i<GENE_LENGTH;i++){
+        //if (gene[i].tag == 'B') continue; // Building rules are excluded
+        if (BuildGene* g = dynamic_cast)
+        int rndval = distribution(gen);
+        if (rndval == 0){
+            replaceGene(&gene[i]);
+        }
+    }
+}
+
+void biasedMutate(int idx){ // 30%
+    std::random_device gen;
+    std::uniform_int_distribution<int> distribution(0, 1);
+    for (int i=0;i<GENE_LENGTH;i++){
+        if (gene[i].tag == 'E' || gene[i].tag == 'C'){
+            if (distribution(gen)){
+                mutateGene(&gene[i]);
+            }
+        }
+    }
+}
+
+void randomizeIndividual(int idx){ // 10%
+
 }
 
 void createCrossOverIndividuals() {
@@ -289,5 +355,6 @@ void printChromosome(int idx) {
 		}
 		printf("\n");
 	}
+	do lnw
 	printf("with fitness : %d\n\n", population[idx].fitness);
 }

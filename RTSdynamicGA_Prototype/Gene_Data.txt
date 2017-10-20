@@ -1,0 +1,7 @@
+
+
+void Behavior01(){
+    if (Mineral > 100){
+        BuildSCV();
+    }
+}
