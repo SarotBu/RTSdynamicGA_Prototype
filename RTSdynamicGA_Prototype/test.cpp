@@ -1,8 +1,9 @@
 #include <cstdio>
 #include <random>
+#include <iostream>
 
-//std::random_device gen;
-//std::uniform_int_distribution<int> dist(0, 5);
+std::random_device gen;
+std::uniform_int_distribution<int> dist(0, 5);
 
 void test(){
     std::random_device gen;
@@ -26,6 +27,7 @@ void test2(){
 
 int main() {
 //initialize();
+    std::cout << gen.entropy() << std::endl;
     test();
     test2();
 return 0;
