@@ -119,6 +119,7 @@ int curPopSize = 0;
 std::random_device gen;
 std::uniform_int_distribution<int> dist(0, 5);
 
+/*
 void test(){
     printf ("1 : %d\n",gen(dist));
 }
@@ -133,7 +134,7 @@ int main() {
     test2();
 return 0;
 }
-
+*/
 
 void onHold() {
 	int cmd;
