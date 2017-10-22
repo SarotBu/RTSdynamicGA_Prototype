@@ -4,6 +4,7 @@
 #include <random>
 #include <algorithm>
 #include <iostream> //FOR DEBUG
+#include <bits/stdc++.h>
 
 typedef long long ll;
 typedef unsigned int uint;
@@ -32,6 +33,8 @@ typedef unsigned long long ull;
 #define UNSET_COST 1
 #define ILLEGAL_COST 10000
 
+
+std::random_device gen;
 // B -> Build Genes
 // R -> Research Genes
 // E -> Economy Genes
@@ -58,10 +61,17 @@ class CombatGene : public Gene{
 
 };
 
+class StateGene : public Gene{
+    private :
+        int StateID;
+
+    public :
+        int getStateID(){ return StateID; }
+};
 
 struct chromosome {
 	//WEIGHT[i] / SUM(WEIGHT[i])i=0...N
-	string gene[GENE_LENGTH]; //GENE as Behavior
+	vector<Gene> gene; //GENE as Behavior
     int  fitness, preferWeight;
 
 	//MAY CHANGE THIS FUNC TO RETURN INT LATERS.
@@ -76,12 +86,12 @@ struct chromosome {
 	}
 
 	void randomize() {
-		std::random_device gen;
+
 		std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
 		for (int i = 0; i < GENE_LENGTH; i++) {
 			int rndval = distribution(gen);
 
-			gene[i] = rndval;
+//			gene[i] = rndval;
 		}
 	}
 
@@ -116,7 +126,6 @@ void printChromosome(int idx);
 std::random_device rnd;
 int curPopSize = 0;
 
-std::random_device gen;
 std::uniform_int_distribution<int> dist(0, 5);
 
 /*
@@ -142,7 +151,6 @@ void onHold() {
 }
 
 void initialize() {
-	std::random_device gen;
 	//std::default_random_engine gen;
 	std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
 
@@ -162,7 +170,6 @@ void initialize() {
 }
 
 void reinitialize(int remainingNum) {
-	std::random_device gen;
 	std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
 
 	for (int i = remainingNum; i < POPULATION_SIZE; i++) {
@@ -221,7 +228,6 @@ void clearNotFitIndividuals() {
 }
 
 int chooseIndividual() {
-	std::random_device gen;
 	std::uniform_int_distribution<int> genePosDist(0, curPopSize-1);
 	return genePosDist(gen);
 }
@@ -230,32 +236,63 @@ int chooseIndividual() {
 // R -> Research Genes
 // E -> Economy Genes
 // C -> Combat Genes
+// S -> State Gene
+chromosome stateCrossOver(chromosome c1,chromosome c2){ // 30%
+    set<StateGene> s1;
+    chromosome ret;
 
-void stateCrossOver(int a,int b){ // 30%
+    for (int i=0;i < c1.gene.size();i++){
+            if (typeid(c1.gene[i]) == typeid(StateGene)){
+                for (int j=0;j < c2.gene.size();j++){
+                    if (typeid(c2.gene[j]) != typeid(StateGene)) continue;
+                        if (c1.gene[i].getStateID() == c2.gene[i].getStateID()){
+                            std::uniform_int_distribution<int> dist(0,1);
+                            if (dist(gen)){ // CHANGE
+                                do{
+                                    ret.push_back(c2.gene[j]);
+                                    j++;
+                                }while (j < c2.gene.size() && typeid(c2.gene[i]) != typeid(StateGene));
+                                if (j < c2.gene.size()) ret.push_back(c2.gene[j]);
+                                break;
+                            }else{ // STAY
+                               do{
+                                    ret.push_back(c1.gene[i]);
+                                    i++;
+                               }while (i < c1.gene.size() && typeid(c1.gene[i]) != typeid(StateGene));
+                               break;
+                            }
+                        }
+                }
+            }else{
+                ret.push_back(c1.gene[i]);
+                i++;
+            }
+    }
 
+    return ret;
 }
 
 void replaceMutate(int idx){ // 30%
-    std::random_device gen;
     std::uniform_int_distribution<int> distribution(0, 3);
 
-    for (int i=0;i<GENE_LENGTH;i++){
+    for (int i=0;i<population[idx].gene.size();i++){
         //if (gene[i].tag == 'B') continue; // Building rules are excluded
-        if (BuildGene* g = dynamic_cast)
+        //if (BuildGene* g = dynamic_cast<*BuildGene>(&BuildGene))
+        if (typeid(gene[i]) == typeid(BuildGene)) continue;
         int rndval = distribution(gen);
-        if (rndval == 0){
-           // replaceGene(&gene[i]);
+        if (rndval == 0){// RANDOM with 25% to replace
+            replaceGene(&gene[i]);
         }
     }
 }
 
 void biasedMutate(int idx){ // 30%
-    std::random_device gen;
     std::uniform_int_distribution<int> distribution(0, 1);
-    for (int i=0;i<GENE_LENGTH;i++){
-        if (gene[i].tag == 'E' || gene[i].tag == 'C'){
+    for (int i=0;i<population[idx].gene.size();i++){
+        //if (gene[i].tag == 'E' || gene[i].tag == 'C'){
+        if (typeid(gene[i]) == typeid(EconomyGene) || typeid(gene[i]) == typeid(CombatGene)){
             if (distribution(gen)){
-                //mutateGene(&gene[i]);
+                biasGene(gene[i]);
             }
         }
     }
@@ -263,6 +300,27 @@ void biasedMutate(int idx){ // 30%
 
 void randomizeIndividual(int idx){ // 10%
 
+}
+
+void replaceGene(Gene &g){
+    std::uniform_int_distribution<int> dist(0,2);
+    int rndval = dist(gen);
+    if (rndval==0){ // Research Gene
+
+
+    }else if (rndval == 1){ // Economy Gene
+
+    }else if (rndval == 2){ // Combat Gene
+
+    }
+}
+
+void biasGene(Gene &g){
+    if (typeid(g) == typeid(EconomyGene)){
+
+    }else if (typeid(g) == typeid(CombatGene)){
+
+    }
 }
 
 void createCrossOverIndividuals() {
@@ -311,7 +369,6 @@ void calculateFitness() {
 }
 
 chromosome crossOver(chromosome &A, chromosome &B) {
-	std::random_device gen;
 	std::uniform_int_distribution<int> distribution(0, GENE_LENGTH - 1);
 	int rndval = distribution(gen);
 
@@ -331,7 +388,6 @@ chromosome mutate_old(chromosome &A) {
 	//int posMutate = rnd(0, GENE_LENGTH - 1);
 	//int MutatedVal = rnd(MINVAL, MAXVAL);
 	//population[idx].gene[posMutate] = MutatedVal;
-	std::random_device gen;
 	std::uniform_int_distribution<int> genePosDist(0, GENE_LENGTH - 1);
 	std::uniform_int_distribution<int> geneValDist(MINVAL, MAXVAL);
 	int posMutate = genePosDist(gen);
@@ -345,7 +401,6 @@ chromosome mutate(chromosome &A) {
 	//int posMutate = rnd(0, GENE_LENGTH - 1);
 	//int MutatedVal = rnd(MINVAL, MAXVAL);
 	//population[idx].gene[posMutate] = MutatedVal;
-	std::random_device gen;
 	std::uniform_int_distribution<int> genePosDist(0, GENE_LENGTH - 1);
 	std::uniform_int_distribution<int> geneValDist(MINVAL, MAXVAL);
 	int posMutate = genePosDist(gen);
