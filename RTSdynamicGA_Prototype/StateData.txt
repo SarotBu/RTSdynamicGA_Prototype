@@ -1,0 +1,17 @@
+//ID    Name
+1       Command Center
+2       Orbital Command
+3       Barrack
+4       Barrack + Tech Lab
+5       Barrack + Reactor
+6       Factory
+7       Factory + Tech Lab
+8       Factory + Reactor
+9       Starport
+10      Starport + Tech Lab
+11      Starport + Reactor
+12      Ghost Academy
+13      Engineering Bay
+14      Armory
+
+
