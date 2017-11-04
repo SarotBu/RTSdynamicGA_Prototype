@@ -61,8 +61,16 @@ class StateRule : public Rule{
 
 };
 
-vector <int,script> scriptList; // scriptList[State] -> Script1 -> Script2 -> ...
 
+class Script{
+    vector <Rule> RuleList;
+};
+
+
+vector <int,script> scriptList; // scriptList[State] -> Script1 -> Script2 -> ...
+/* RULES STATE for TERRAN
+
+*/
 
 
 int main(){

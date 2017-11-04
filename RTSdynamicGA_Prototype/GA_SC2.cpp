@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <bitset>
 #include <random>
 #include <algorithm>
 #include <iostream> //FOR DEBUG
@@ -9,7 +8,6 @@
 typedef long long ll;
 typedef unsigned int uint;
 typedef unsigned long long ull;
-//typedef bitset<8> byte;
 
 #define LOOPS_LIMIT -1 // USED TO LIMIT NUMBERS OF LOOP RUNNING GA, -1 = INFINITY, INT = # of LOOPS limit
 #define GENE_LENGTH 81 // LENGTH OF STRING OF SUDOKU
@@ -25,6 +23,8 @@ typedef unsigned long long ull;
 #define LOCAL_STRUCK_TIMES 10000
 #define OLD_GEN_AFTER_RE_NUMS 0
 
+#define INITIAL_STATE 1 // INITIAL STATE FOR RTS AI
+
 #define SUDOKU_ROW 9
 #define SUDOKU_COL 9
 #define DUPLICATED_ROW_COST 10
@@ -35,43 +35,13 @@ typedef unsigned long long ull;
 
 
 std::random_device gen;
-// B -> Build Genes
-// R -> Research Genes
-// E -> Economy Genes
-// C -> Combat Genes
-
-class Gene{
-
-
-};
-
-class BuildGene : public Gene{
-
-};
-
-class ResearchGene : public Gene{
-
-};
-
-class EconomyGene : public Gene{
-
-};
-
-class CombatGene : public Gene{
-
-};
-
-class StateGene : public Gene{
-    private :
-        int StateID;
-
-    public :
-        int getStateID(){ return StateID; }
-};
-
+// B -> Build Rules
+// R -> Research Rules
+// E -> Economy Rules
+// C -> Combat Rules
 struct chromosome {
 	//WEIGHT[i] / SUM(WEIGHT[i])i=0...N
-	vector<Gene> gene; //GENE as Behavior
+	vector<Rule> gene; //GENE as Behavior
     int  fitness, preferWeight;
 
 	//MAY CHANGE THIS FUNC TO RETURN INT LATERS.
@@ -94,6 +64,11 @@ struct chromosome {
 //			gene[i] = rndval;
 		}
 	}
+    
+    void generateGene_RND(){
+        int state = INITIAL_STATE;
+
+    }
 
 	bool operator <(const chromosome &ot) {
 		return fitness < ot.fitness;
@@ -127,58 +102,26 @@ std::random_device rnd;
 int curPopSize = 0;
 
 std::uniform_int_distribution<int> dist(0, 5);
-
-/*
-void test(){
-    printf ("1 : %d\n",gen(dist));
-}
-
-void test2(){
-    printf ("2 : %d\n",gen(dist));
-}
-
-int main() {
-//initialize();
-    test();
-    test2();
-return 0;
-}
-*/
-
 void onHold() {
 	int cmd;
 	scanf_s("%d", &cmd);
 }
 
 void initialize() {
-	//std::default_random_engine gen;
 	std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
 
 	for (int i = 0; i < POPULATION_SIZE; i++) {
-		/*
-		for (int j = 0; j < GENE_LENGTH; j++) {
-		int rndval = distribution(gen);
-		population[i].gene[j] = rndval;
-		//printf("%d\n", rndval);
-		}*/
-		population[i].SudokuRandomize();
-	}
-
-
-
-	//for (int i = 0; i < 1000000000; i++);
+        population[i].generateGene_RND();
+    }
 }
 
 void reinitialize(int remainingNum) {
 	std::uniform_int_distribution<int> distribution(MINVAL, MAXVAL);
 
 	for (int i = remainingNum; i < POPULATION_SIZE; i++) {
-		population[i].SudokuRandomize();
+        population[i].generateGene_RND();
 	}
 
-
-
-	//for (int i = 0; i < 1000000000; i++);
 }
 
 
@@ -232,33 +175,33 @@ int chooseIndividual() {
 	return genePosDist(gen);
 }
 
-// B -> Build Genes
-// R -> Research Genes
-// E -> Economy Genes
-// C -> Combat Genes
-// S -> State Gene
+// B -> Build Rules
+// R -> Research Rules
+// E -> Economy Rules
+// C -> Combat Rules
+// S -> State Rule
 chromosome stateCrossOver(chromosome c1,chromosome c2){ // 30%
-    set<StateGene> s1;
+    set<StateRule> s1;
     chromosome ret;
 
     for (int i=0;i < c1.gene.size();i++){
-            if (typeid(c1.gene[i]) == typeid(StateGene)){
+            if (typeid(c1.gene[i]) == typeid(StateRule)){
                 for (int j=0;j < c2.gene.size();j++){
-                    if (typeid(c2.gene[j]) != typeid(StateGene)) continue;
+                    if (typeid(c2.gene[j]) != typeid(StateRule)) continue;
                         if (c1.gene[i].getStateID() == c2.gene[i].getStateID()){
                             std::uniform_int_distribution<int> dist(0,1);
                             if (dist(gen)){ // CHANGE
                                 do{
                                     ret.push_back(c2.gene[j]);
                                     j++;
-                                }while (j < c2.gene.size() && typeid(c2.gene[i]) != typeid(StateGene));
+                                }while (j < c2.gene.size() && typeid(c2.gene[i]) != typeid(StateRule));
                                 if (j < c2.gene.size()) ret.push_back(c2.gene[j]);
                                 break;
                             }else{ // STAY
                                do{
                                     ret.push_back(c1.gene[i]);
                                     i++;
-                               }while (i < c1.gene.size() && typeid(c1.gene[i]) != typeid(StateGene));
+                               }while (i < c1.gene.size() && typeid(c1.gene[i]) != typeid(StateRule));
                                break;
                             }
                         }
@@ -277,11 +220,11 @@ void replaceMutate(int idx){ // 30%
 
     for (int i=0;i<population[idx].gene.size();i++){
         //if (gene[i].tag == 'B') continue; // Building rules are excluded
-        //if (BuildGene* g = dynamic_cast<*BuildGene>(&BuildGene))
-        if (typeid(gene[i]) == typeid(BuildGene)) continue;
+        //if (BuildRule* g = dynamic_cast<*BuildRule>(&BuildRule))
+        if (typeid(gene[i]) == typeid(BuildRule)) continue;
         int rndval = distribution(gen);
         if (rndval == 0){// RANDOM with 25% to replace
-            replaceGene(&gene[i]);
+            replaceRule(&gene[i]);
         }
     }
 }
@@ -290,9 +233,9 @@ void biasedMutate(int idx){ // 30%
     std::uniform_int_distribution<int> distribution(0, 1);
     for (int i=0;i<population[idx].gene.size();i++){
         //if (gene[i].tag == 'E' || gene[i].tag == 'C'){
-        if (typeid(gene[i]) == typeid(EconomyGene) || typeid(gene[i]) == typeid(CombatGene)){
+        if (typeid(gene[i]) == typeid(EconomyRule) || typeid(gene[i]) == typeid(CombatRule)){
             if (distribution(gen)){
-                biasGene(gene[i]);
+                biasRule(gene[i]);
             }
         }
     }
@@ -302,23 +245,23 @@ void randomizeIndividual(int idx){ // 10%
 
 }
 
-void replaceGene(Gene &g){
+void replaceRule(Rule &g){
     std::uniform_int_distribution<int> dist(0,2);
     int rndval = dist(gen);
-    if (rndval==0){ // Research Gene
+    if (rndval==0){ // Research Rule
 
 
-    }else if (rndval == 1){ // Economy Gene
+    }else if (rndval == 1){ // Economy Rule
 
-    }else if (rndval == 2){ // Combat Gene
+    }else if (rndval == 2){ // Combat Rule
 
     }
 }
 
-void biasGene(Gene &g){
-    if (typeid(g) == typeid(EconomyGene)){
+void biasRule(Rule &g){
+    if (typeid(g) == typeid(EconomyRule)){
 
-    }else if (typeid(g) == typeid(CombatGene)){
+    }else if (typeid(g) == typeid(CombatRule)){
 
     }
 }

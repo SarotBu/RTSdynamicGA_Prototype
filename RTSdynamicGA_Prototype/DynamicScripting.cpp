@@ -3,7 +3,8 @@
 
 #define RULES_LIMIT 100
 
-vector <int,script> scriptList; // scriptList[State] -> Script1 -> Script2 -> ...
+vector <int,script> scriptList; // scriptList[State] -> Script1 -> Script2 ->  ... 
+
 
 
 
