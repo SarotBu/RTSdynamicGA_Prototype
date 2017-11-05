@@ -63,7 +63,7 @@ class StateRule : public Rule{
 
 
 class Script{
-    vector <Rule> RuleList;
+    vector <Rule> ruleList;
 };
 
 

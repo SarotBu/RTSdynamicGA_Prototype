@@ -67,7 +67,17 @@ struct chromosome {
     
     void generateGene_RND(){
         int state = INITIAL_STATE;
-
+        while (getStateTier(state) <= MAX_STATE_TIER){
+            Script s = generateScript_RND(state);
+            this.concatScript(s);
+            state = getNextState(state, s);
+        }
+    }
+    
+    void concatScript(Script s){
+       for (int i=0;i<s.ruleList.size();i++){
+            this.gene.push_back(s.ruleList[i]);
+       }
     }
 
 	bool operator <(const chromosome &ot) {
