@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include <random>
 #include <algorithm>
@@ -64,7 +64,7 @@ struct chromosome {
 //			gene[i] = rndval;
 		}
 	}
-    
+
     void generateGene_RND(){
         int state = INITIAL_STATE;
         while (getStateTier(state) <= MAX_STATE_TIER){
@@ -73,7 +73,7 @@ struct chromosome {
             state = getNextState(state, s);
         }
     }
-    
+
     void concatScript(Script s){
        for (int i=0;i<s.ruleList.size();i++){
             this.gene.push_back(s.ruleList[i]);

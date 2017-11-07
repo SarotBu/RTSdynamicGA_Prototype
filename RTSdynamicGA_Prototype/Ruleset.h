@@ -11,12 +11,16 @@ std::random_device gen;
 class Rule{
     protected :
     int scriptID, stateID;
+    bool used=0;
     public :
     virtual void randomize();
     int getScriptID(){  return scriptID;    }
     int getStateID(){ return stateID;   }
+    bool getUsed(){ return used; }
     void setScriptID(int sid){ scriptID = sid; }
     void setStateID(int sid){stateID = sid; }
+    void setUsed(bool used){isUsed = used;}
+
 };
 
 class BuildRule : public Rule{
