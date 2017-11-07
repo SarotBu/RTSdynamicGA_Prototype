@@ -30,7 +30,7 @@ void genFunc(){
 }
 
 int main(){
-    freopen("RuleStructure.cpp","w",stdout);
+    freopen("RuleManager.cpp","w",stdout);
     genLibs();
     genFunc();
 return 0;
