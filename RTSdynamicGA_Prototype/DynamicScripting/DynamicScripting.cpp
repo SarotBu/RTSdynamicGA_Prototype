@@ -1,6 +1,10 @@
 #include <bits/stdc++.h>
 #include "Ruleset.h"
 #include "RuleManager.cpp"
+
+#include "sc2api/sc2_api.h"
+#include "sc2utils/sc2_manage_process.h"
+
 #define RULES_LIMIT 100
 #define BREAK_EVEN_POINT 0.5 // break-even point is in [0,1]
 //vector <int,script> scriptList; // scriptList[State] -> Script1 -> Script2 ->  ...
