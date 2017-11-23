@@ -2,7 +2,7 @@
 #include "sc2utils/sc2_manage_process.h"
 
 #include "bot_examples.h"
-
+#include "sabulib.h"
 #include <iostream>
 
 int main(int argc, char* argv[]) {
