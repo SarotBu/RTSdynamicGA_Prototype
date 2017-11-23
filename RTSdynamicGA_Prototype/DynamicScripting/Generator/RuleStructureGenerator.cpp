@@ -1,15 +1,31 @@
 //RuleStructureGenerator.cpp
 #include <cstdio>
+int N;
 
 void genLibs(){
     printf ("#include \"RuleData.cpp\"\n");
+}
+
+void writeHeader(int ruleID){
+    printf ("void ruleFunc%d();\n",ruleID);
 }
 
 void writeRule(int ruleID){
     printf ("\t\truleFunc%d();\n",ruleID);
 }
 
-void genRules(int N){
+void writeFuncBody(int ruleID){
+    printf ("void ruleFunc%d(){\n",ruleID);
+    printf (" \n}\n\n");
+}
+
+void genHeader(){
+    for (int i=1;i<=N;i++){
+        writeHeader(i);
+    }
+}
+
+void genRules(){
     //WILL GENERATE FUNCTION ACCORDING TO EACH RULE LATER
     for (int i=1;i<=N;i++){
         printf ("\tif (scriptID == %d){\n",i);
@@ -22,16 +38,26 @@ void genRules(int N){
 
 void genFunc(){
     printf ("void executeScriptViaID(int scriptID){\n");
-    int N;
-    scanf ("%d",&N);
-    genRules(N);
+    genRules();
+    printf ("}\n\n");
+}
 
-    printf ("}\n");
+void genFuncBody(){
+    for (int i=1;i<=N;i++){
+        writeFuncBody(i);
+    }
 }
 
 int main(){
-    freopen("RuleManager.cpp","w",stdout);
+    char fname[50];
+    printf ("Function Manager's File name : ");
+    scanf ("%s",fname);
+    printf ("Please input the number of rules : ");
+    freopen(fname,"w",stdout);
+    scanf ("%d",&N);
     genLibs();
+    genHeader();
     genFunc();
+    genFuncBody();
 return 0;
 }
