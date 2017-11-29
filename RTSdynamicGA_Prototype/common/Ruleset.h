@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 #include "GA_SC2.cpp"
 
+#include "../sabulib.h"
+
 #define BuildScriptN 10
 #define ResearchScriptN 10
 #define EconomyScriptN 10
